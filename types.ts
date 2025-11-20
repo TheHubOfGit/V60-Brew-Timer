@@ -16,3 +16,5 @@ export interface ChartDataPoint {
 export interface AudioContextState {
   ctx: AudioContext | null;
 }
+
+export type BrewMethod = '4:6' | 'hoffmann-1cup';

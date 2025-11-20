@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Play, Pause, RotateCcw, Droplets, Coffee, Settings2 } from 'lucide-react';
+import { Play, Pause, RotateCcw, Droplets, Coffee, Settings2, FlaskConical } from 'lucide-react';
 import { BrewChart } from './components/BrewChart';
 import { generateRecipe, getCurrentStep } from './utils/recipe';
+import { BrewMethod } from './types';
 import { playStepCompleteTone, initAudio } from './utils/audio';
 
 const DEFAULT_WATER = 300;
@@ -10,6 +11,14 @@ const App: React.FC = () => {
   // Settings
   const [totalWater, setTotalWater] = useState(DEFAULT_WATER);
   const [demoSpeed, setDemoSpeed] = useState(1);
+  const [brewMethod, setBrewMethod] = useState<BrewMethod>(() => {
+    const saved = localStorage.getItem('brewMethod');
+    return (saved as BrewMethod) || '4:6';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('brewMethod', brewMethod);
+  }, [brewMethod]);
 
   // Timer State
   const [time, setTime] = useState(0);
@@ -17,7 +26,7 @@ const App: React.FC = () => {
   const [isFinished, setIsFinished] = useState(false);
 
   // Recipe State
-  const recipe = useMemo(() => generateRecipe(totalWater), [totalWater]);
+  const recipe = useMemo(() => generateRecipe(totalWater, brewMethod), [totalWater, brewMethod]);
   const currentStep = getCurrentStep(recipe, time);
 
   // Refs for animation loop
@@ -26,7 +35,10 @@ const App: React.FC = () => {
   const lastStepIndexRef = useRef<number>(-1);
 
   // Derived values
-  const coffeeWeight = Math.round(totalWater / 15); // 1:15 Ratio standard for 4:6 method often, or 1:16. Using 1:15 for stronger cup.
+  const coffeeWeight = useMemo(() => {
+    if (brewMethod === 'hoffmann-1cup') return Math.round(totalWater / 16.66);
+    return Math.round(totalWater / 15); // 1:15 Ratio standard for 4:6 method
+  }, [totalWater, brewMethod]);
 
   const reset = () => {
     setIsRunning(false);
@@ -109,7 +121,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col items-center justify-center p-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col items-center justify-center p-2 md:p-8 font-sans">
 
       {/* Main Card */}
       <div className="w-full max-w-4xl bg-gray-900 rounded-2xl shadow-2xl border border-gray-800 overflow-hidden relative">
@@ -117,7 +129,9 @@ const App: React.FC = () => {
         {/* Header */}
         <div className="p-6 border-b border-gray-800 flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">V60 Guide: 4:6 Method</h1>
+            <h1 className="text-2xl font-bold text-white tracking-tight">
+              {brewMethod === 'hoffmann-1cup' ? 'James Hoffmann 1-Cup' : 'V60 Guide: 4:6 Method'}
+            </h1>
             <p className="text-gray-400 text-sm mt-1 flex items-center gap-2">
               <Coffee size={14} />
               <span>Recommended Dose: <span className="text-blue-400 font-bold">{coffeeWeight}g</span> Coffee</span>
@@ -134,7 +148,7 @@ const App: React.FC = () => {
         </div>
 
         {/* Chart Section */}
-        <div className="relative w-full h-[450px] bg-gray-900/50 p-4">
+        <div className="relative w-full h-[300px] md:h-[450px] bg-gray-900/50 p-2 md:p-4">
           {/* Chart */}
 
           <BrewChart
@@ -147,13 +161,46 @@ const App: React.FC = () => {
         {/* Controls & Settings */}
         <div className="p-6 bg-gray-800/50 backdrop-blur-sm border-t border-gray-700">
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            {/* Brew Method */}
+            <div className="space-y-4">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
+                <FlaskConical size={16} className="text-green-400" />
+                Brew Method
+              </label>
+              <div className="flex bg-gray-700 rounded-lg p-1">
+                <button
+                  onClick={() => { reset(); setBrewMethod('4:6'); }}
+                  className={`flex-1 py-1 px-2 rounded-md text-sm font-medium transition-all ${brewMethod === '4:6'
+                      ? 'bg-gray-600 text-white shadow-sm'
+                      : 'text-gray-400 hover:text-gray-200'
+                    }`}
+                >
+                  4:6 Method
+                </button>
+                <button
+                  onClick={() => { reset(); setBrewMethod('hoffmann-1cup'); }}
+                  className={`flex-1 py-1 px-2 rounded-md text-sm font-medium transition-all ${brewMethod === 'hoffmann-1cup'
+                      ? 'bg-gray-600 text-white shadow-sm'
+                      : 'text-gray-400 hover:text-gray-200'
+                    }`}
+                >
+                  Hoffmann
+                </button>
+              </div>
+              <div className="text-xs text-gray-500 px-1">
+                {brewMethod === '4:6' ? 'Sweetness & Strength balance' : 'Better 1 Cup Technique'}
+              </div>
+            </div>
+
             {/* Water Settings */}
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
                   <Droplets size={16} className="text-blue-400" />
-                  Total Water Target
+                  Total Water
                 </label>
                 <span className="text-blue-400 font-bold">{totalWater}g</span>
               </div>
@@ -227,11 +274,13 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      <p className="mt-8 text-gray-500 text-sm">
-        Based on Tetsu Kasuya's 4:6 method. Adjust grind size to finish drawdown around 3:30.
+      <p className="mt-8 text-gray-500 text-sm text-center max-w-2xl">
+        {brewMethod === '4:6'
+          ? "Based on Tetsu Kasuya's 4:6 method. Adjust grind size to finish drawdown around 3:30."
+          : "Based on James Hoffmann's 'Better 1 Cup V60' technique. High temp, medium-fine grind."}
       </p>
 
-    </div>
+    </div >
   );
 };
 

@@ -63,7 +63,7 @@ export const BrewChart: React.FC<BrewChartProps> = ({ currentTime, recipe, total
   }, [data, currentTime]);
 
   return (
-    <div className="w-full h-[400px] select-none">
+    <div className="w-full h-full select-none">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
           <defs>
