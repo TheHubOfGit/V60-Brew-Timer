@@ -1,0 +1,5 @@
+{
+  "name": "V60 Brew Guide",
+  "description": "An interactive, visual V60 coffee brewing timer with customizable water amounts, real-time charting, and audio cues.",
+  "requestFramePermissions": []
+}
