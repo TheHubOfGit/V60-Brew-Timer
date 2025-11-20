@@ -1,20 +1,35 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# V60 Brew Timer ☕
 
-# Run and deploy your AI Studio app
+A precision brewing timer designed for the 4:6 method. This app guides you through each pour and wait phase with a visual chart, timer, and audio cues to help you brew the perfect cup of coffee.
 
-This contains everything you need to run your app locally.
+## 🚀 Live Demo
+**[Run the App](https://1f02de66.v60-brew-timer.pages.dev)**
 
-View your app in AI Studio: https://ai.studio/apps/drive/1MfO5DRUrfoB2w28M_ZWy64MEayAs4Li9
+## 🛠️ How It Was Built
+This project is a Progressive Web App (PWA) built with:
+- **React** & **TypeScript** for the UI and logic
+- **Tailwind CSS** for styling
+- **Recharts** for the visualization
+- **Vite** for the build tool
 
-## Run Locally
+It was designed to be installable on Android devices for a native-like experience.
 
-**Prerequisites:**  Node.js
+## 💻 How to Run Locally
 
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/TheHubOfGit/V60-Brew-Timer.git
+   cd V60-Brew-Timer
+   ```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+4. Open http://localhost:3000 in your browser.
