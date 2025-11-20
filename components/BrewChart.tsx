@@ -17,6 +17,7 @@ interface BrewChartProps {
   currentTime: number;
   recipe: RecipeStep[];
   totalWater: number;
+  theme: 'light' | 'dark';
 }
 
 const formatTime = (seconds: number) => {
@@ -25,7 +26,7 @@ const formatTime = (seconds: number) => {
   return `${m}:${s.toString().padStart(2, '0')}`;
 };
 
-export const BrewChart: React.FC<BrewChartProps> = ({ currentTime, recipe, totalWater }) => {
+export const BrewChart: React.FC<BrewChartProps> = ({ currentTime, recipe, totalWater, theme }) => {
   const data = useMemo(() => generateChartData(recipe), [recipe]);
 
   // Calculate current target weight with smooth interpolation
@@ -62,6 +63,15 @@ export const BrewChart: React.FC<BrewChartProps> = ({ currentTime, recipe, total
     }));
   }, [data, currentTime]);
 
+  const colors = {
+    grid: theme === 'dark' ? '#374151' : '#e5e7eb',
+    text: theme === 'dark' ? '#9ca3af' : '#6b7280',
+    tooltipBg: theme === 'dark' ? '#1f2937' : '#ffffff',
+    tooltipBorder: theme === 'dark' ? '#374151' : '#e5e7eb',
+    tooltipText: theme === 'dark' ? '#f3f4f6' : '#111827',
+    futureStroke: theme === 'dark' ? '#6b7280' : '#9ca3af',
+  };
+
   return (
     <div className="w-full h-full select-none">
       <ResponsiveContainer width="100%" height="100%">
@@ -73,13 +83,13 @@ export const BrewChart: React.FC<BrewChartProps> = ({ currentTime, recipe, total
             </linearGradient>
           </defs>
 
-          <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} vertical={false} />
 
           <XAxis
             dataKey="time"
             tickFormatter={formatTime}
-            stroke="#9ca3af"
-            tick={{ fill: '#9ca3af', fontSize: 12 }}
+            stroke={colors.text}
+            tick={{ fill: colors.text, fontSize: 12 }}
             interval={45} // roughly shows major steps
             type="number"
             domain={[0, 'auto']}
@@ -87,15 +97,15 @@ export const BrewChart: React.FC<BrewChartProps> = ({ currentTime, recipe, total
           />
 
           <YAxis
-            stroke="#9ca3af"
-            tick={{ fill: '#9ca3af', fontSize: 12 }}
+            stroke={colors.text}
+            tick={{ fill: colors.text, fontSize: 12 }}
             tickFormatter={(val) => `${val}g`}
             domain={[0, totalWater + 20]}
           />
 
           <Tooltip
-            contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', color: '#f3f4f6' }}
-            itemStyle={{ color: '#93c5fd' }}
+            contentStyle={{ backgroundColor: colors.tooltipBg, borderColor: colors.tooltipBorder, color: colors.tooltipText }}
+            itemStyle={{ color: '#3b82f6' }}
             labelFormatter={formatTime}
             formatter={(value: number) => [`${Math.round(value)}g`, 'Water Weight']}
           />
@@ -104,7 +114,7 @@ export const BrewChart: React.FC<BrewChartProps> = ({ currentTime, recipe, total
           <Area
             type="monotone"
             dataKey="futureWeight"
-            stroke="#6b7280"
+            stroke={colors.futureStroke}
             strokeWidth={2}
             strokeDasharray="5 5"
             fill="transparent"

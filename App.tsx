@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Play, Pause, RotateCcw, Droplets, Coffee, Settings2, FlaskConical } from 'lucide-react';
+import { Play, Pause, RotateCcw, Droplets, Coffee, Settings2, FlaskConical, Sun, Moon } from 'lucide-react';
 import { BrewChart } from './components/BrewChart';
 import { generateRecipe, getCurrentStep } from './utils/recipe';
 import { BrewMethod } from './types';
@@ -19,6 +19,21 @@ const App: React.FC = () => {
   }, [totalWater]);
 
   const [demoSpeed, setDemoSpeed] = useState(1);
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved as 'light' | 'dark';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
   const [brewMethod, setBrewMethod] = useState<BrewMethod>(() => {
     const saved = localStorage.getItem('brewMethod');
     return (saved as BrewMethod) || '4:6';
@@ -128,62 +143,73 @@ const App: React.FC = () => {
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
+
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col items-center justify-center p-2 md:p-8 font-sans">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 flex flex-col items-center justify-center p-2 md:p-8 font-sans transition-colors duration-300">
 
       {/* Main Card */}
-      <div className="w-full max-w-4xl bg-gray-900 rounded-2xl shadow-2xl border border-gray-800 overflow-hidden relative">
+      <div className="w-full max-w-4xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden relative transition-colors duration-300">
 
         {/* Header */}
-        <div className="p-6 border-b border-gray-800 flex justify-between items-center">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
               {brewMethod === 'hoffmann-1cup' ? 'James Hoffmann 1-Cup' : 'V60 Guide: 4:6 Method'}
             </h1>
-            <p className="text-gray-400 text-sm mt-1 flex items-center gap-2">
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1 flex items-center gap-2">
               <Coffee size={14} />
-              <span>Recommended Dose: <span className="text-blue-400 font-bold">{coffeeWeight}g</span> Coffee</span>
+              <span>Recommended Dose: <span className="text-blue-500 dark:text-blue-400 font-bold">{coffeeWeight}g</span> Coffee</span>
             </p>
           </div>
-          <div className="text-right">
-            <div className="text-5xl font-mono font-bold tracking-wider text-white tabular-nums">
-              {formatTime(time)}
-            </div>
-            <div className="text-sm font-medium text-blue-400 mt-1">
-              {isFinished ? "Enjoy!" : (currentStep?.description || "Get Ready")}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              aria-label="Toggle Theme"
+            >
+              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+            </button>
+            <div className="text-right">
+              <div className="text-5xl font-mono font-bold tracking-wider text-gray-900 dark:text-white tabular-nums">
+                {formatTime(time)}
+              </div>
+              <div className="text-sm font-medium text-blue-500 dark:text-blue-400 mt-1">
+                {isFinished ? "Enjoy!" : (currentStep?.description || "Get Ready")}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Chart Section */}
-        <div className="relative w-full h-[300px] md:h-[450px] bg-gray-900/50 p-2 md:p-4">
+        <div className="relative w-full h-[300px] md:h-[450px] bg-gray-50/50 dark:bg-gray-900/50 p-2 md:p-4 transition-colors duration-300">
           {/* Chart */}
 
           <BrewChart
             currentTime={time}
             recipe={recipe}
             totalWater={totalWater}
+            theme={theme}
           />
         </div>
 
         {/* Controls & Settings */}
-        <div className="p-6 bg-gray-800/50 backdrop-blur-sm border-t border-gray-700">
+        <div className="p-6 bg-gray-50/80 dark:bg-gray-800/50 backdrop-blur-sm border-t border-gray-200 dark:border-gray-700 transition-colors duration-300">
 
 
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             {/* Brew Method */}
             <div className="space-y-4">
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
-                <FlaskConical size={16} className="text-green-400" />
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <FlaskConical size={16} className="text-green-500 dark:text-green-400" />
                 Brew Method
               </label>
-              <div className="flex bg-gray-700 rounded-lg p-1">
+              <div className="flex bg-gray-200 dark:bg-gray-700 rounded-lg p-1 transition-colors duration-300">
                 <button
                   onClick={() => { reset(); setBrewMethod('4:6'); }}
                   className={`flex-1 py-1 px-2 rounded-md text-sm font-medium transition-all ${brewMethod === '4:6'
-                    ? 'bg-gray-600 text-white shadow-sm'
-                    : 'text-gray-400 hover:text-gray-200'
+                    ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                     }`}
                 >
                   4:6 Method
@@ -191,8 +217,8 @@ const App: React.FC = () => {
                 <button
                   onClick={() => { reset(); setBrewMethod('hoffmann-1cup'); }}
                   className={`flex-1 py-1 px-2 rounded-md text-sm font-medium transition-all ${brewMethod === 'hoffmann-1cup'
-                    ? 'bg-gray-600 text-white shadow-sm'
-                    : 'text-gray-400 hover:text-gray-200'
+                    ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                     }`}
                 >
                   Hoffmann
@@ -206,11 +232,11 @@ const App: React.FC = () => {
             {/* Water Settings */}
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
-                  <Droplets size={16} className="text-blue-400" />
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <Droplets size={16} className="text-blue-500 dark:text-blue-400" />
                   Total Water
                 </label>
-                <span className="text-blue-400 font-bold">{totalWater}g</span>
+                <span className="text-blue-500 dark:text-blue-400 font-bold">{totalWater}g</span>
               </div>
               <input
                 type="range"
@@ -222,7 +248,7 @@ const App: React.FC = () => {
                   reset();
                   setTotalWater(Number(e.target.value));
                 }}
-                className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500 hover:accent-blue-400 transition-all"
+                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500 hover:accent-blue-400 transition-all"
               />
               <div className="flex justify-between text-xs text-gray-500 px-1">
                 <span>150g</span>
@@ -233,11 +259,11 @@ const App: React.FC = () => {
             {/* Speed Settings */}
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
-                  <Settings2 size={16} className="text-purple-400" />
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <Settings2 size={16} className="text-purple-500 dark:text-purple-400" />
                   Demo Speed
                 </label>
-                <span className="text-purple-400 font-bold">{demoSpeed}x</span>
+                <span className="text-purple-500 dark:text-purple-400 font-bold">{demoSpeed}x</span>
               </div>
               <input
                 type="range"
@@ -246,7 +272,7 @@ const App: React.FC = () => {
                 step="1"
                 value={demoSpeed}
                 onChange={(e) => setDemoSpeed(Number(e.target.value))}
-                className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500 hover:accent-purple-400 transition-all"
+                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500 hover:accent-purple-400 transition-all"
               />
               <div className="flex justify-between text-xs text-gray-500 px-1">
                 <span>Realtime</span>
@@ -272,7 +298,7 @@ const App: React.FC = () => {
 
             <button
               onClick={reset}
-              className="flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-lg bg-gray-700 hover:bg-gray-600 text-gray-200 transition-all transform active:scale-95 shadow-lg shadow-gray-900/20"
+              className="flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 transition-all transform active:scale-95 shadow-lg shadow-gray-400/20 dark:shadow-gray-900/20"
             >
               <RotateCcw size={24} />
               Reset
