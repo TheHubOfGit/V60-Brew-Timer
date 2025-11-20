@@ -9,7 +9,15 @@ const DEFAULT_WATER = 300;
 
 const App: React.FC = () => {
   // Settings
-  const [totalWater, setTotalWater] = useState(DEFAULT_WATER);
+  const [totalWater, setTotalWater] = useState(() => {
+    const saved = localStorage.getItem('totalWater');
+    return saved ? Number(saved) : DEFAULT_WATER;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('totalWater', totalWater.toString());
+  }, [totalWater]);
+
   const [demoSpeed, setDemoSpeed] = useState(1);
   const [brewMethod, setBrewMethod] = useState<BrewMethod>(() => {
     const saved = localStorage.getItem('brewMethod');
@@ -174,8 +182,8 @@ const App: React.FC = () => {
                 <button
                   onClick={() => { reset(); setBrewMethod('4:6'); }}
                   className={`flex-1 py-1 px-2 rounded-md text-sm font-medium transition-all ${brewMethod === '4:6'
-                      ? 'bg-gray-600 text-white shadow-sm'
-                      : 'text-gray-400 hover:text-gray-200'
+                    ? 'bg-gray-600 text-white shadow-sm'
+                    : 'text-gray-400 hover:text-gray-200'
                     }`}
                 >
                   4:6 Method
@@ -183,8 +191,8 @@ const App: React.FC = () => {
                 <button
                   onClick={() => { reset(); setBrewMethod('hoffmann-1cup'); }}
                   className={`flex-1 py-1 px-2 rounded-md text-sm font-medium transition-all ${brewMethod === 'hoffmann-1cup'
-                      ? 'bg-gray-600 text-white shadow-sm'
-                      : 'text-gray-400 hover:text-gray-200'
+                    ? 'bg-gray-600 text-white shadow-sm'
+                    : 'text-gray-400 hover:text-gray-200'
                     }`}
                 >
                   Hoffmann
