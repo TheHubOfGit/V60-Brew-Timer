@@ -145,7 +145,7 @@ const App: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 flex flex-col items-center justify-center p-2 md:p-8 font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 flex flex-col items-center justify-start py-2 px-2 md:p-8 font-sans transition-colors duration-300">
 
       {/* Main Card */}
       <div className="w-full max-w-4xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden relative transition-colors duration-300">
