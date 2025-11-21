@@ -145,7 +145,7 @@ const App: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 flex flex-col items-center pt-4 pb-24 px-2 md:p-8 font-sans transition-colors duration-300 overflow-y-auto">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 flex flex-col items-center py-4 px-2 md:p-8 font-sans transition-colors duration-300 overflow-y-auto">
 
       {/* Main Card */}
       <div className="w-full max-w-4xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden relative transition-colors duration-300">
@@ -308,7 +308,7 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      <p className="mt-4 mb-8 text-gray-500 text-sm text-center max-w-2xl px-4">
+      <p className="mt-4 text-gray-500 text-sm text-center max-w-2xl px-4">
         {brewMethod === '4:6'
           ? "Based on Tetsu Kasuya's 4:6 method. Adjust grind size to finish drawdown around 3:30."
           : "Based on James Hoffmann's 'Better 1 Cup V60' technique. High temp, medium-fine grind."}
